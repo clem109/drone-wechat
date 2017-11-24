@@ -1,12 +1,7 @@
-# drone-webhook
+# drone-wechat
 
-[![Build Status](http://beta.drone.io/api/badges/drone-plugins/drone-webhook/status.svg)](http://beta.drone.io/drone-plugins/drone-webhook)
-[![Join the chat at https://gitter.im/drone/drone](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/drone/drone)
-[![Go Doc](https://godoc.org/github.com/drone-plugins/drone-webhook?status.svg)](http://godoc.org/github.com/drone-plugins/drone-webhook)
-[![Go Report](https://goreportcard.com/badge/github.com/drone-plugins/drone-webhook)](https://goreportcard.com/report/github.com/drone-plugins/drone-webhook)
-[![](https://images.microbadger.com/badges/image/plugins/webhook.svg)](https://microbadger.com/images/plugins/webhook "Get your own image badge on microbadger.com")
-
-Drone plugin to send build status notifications via Webhook. For the usage information and a listing of the available options please take a look at [the docs](DOCS.md).
+Drone plugin to send build status notifications via WeChat for Work. For usage
+information please look at [the docs](DOCS.md).
 
 ## Build
 
@@ -15,6 +10,8 @@ Build the binary with the following commands:
 ```
 go build
 ```
+
+## CHANGE BELOW
 
 ## Docker
 
