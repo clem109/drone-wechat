@@ -3,12 +3,15 @@ You will need to supply Drone with outgoing Webhook URLs.
 
 You can override the default configuration with the following parameters:
 
-* `urls` - JSON payloads are sent to each URL
-* `method` - HTTP request method. Defaults to `POST`
-* `headers` - HTTP request header map
-* `username` - The username as a string for HTTP basic auth
-* `password` - The password as a string for HTTP basic auth
+* `access_token` - The access token for authorization
+* `msgtype` - The type of message, either text, textcard
+* `agentid` - The agent id to send the message
+* `touser` - The users to send the message to, @all for all users
+* `toparty` - Party ID to send messages to
+* `safe` - Whether to make this message confidential or not, 0 is false, 1 is
+  true. Defaults to `false`
 * `skip_verify` - Skip verification of TLS certificates, defaults to `false`
+* `content` - message content
 
 ## Example
 
@@ -29,7 +32,8 @@ notify:
 In some cases you may want to submit a custom payload in the body of your hook.
 For this usage the following additional parameters should be used:
 
-* `template` - Handlebars template to create a custom payload body. See [docs](http://handlebarsjs.com/)
+* `template` - Handlebars template to create a custom payload body. See
+  [docs](http://handlebarsjs.com/)
 * `content_type` - HTTP request content type, defaults to `application/json`
 
 Example configuration that generate a custom Yaml payload:
@@ -45,7 +49,8 @@ In some cases your webhook may need to authenticate with another service. You
 can set the basic `Authentication` header with a username and password. For
 these use cases we expose the following additional parameters:
 
-* Sets the request's `Authorization` header to use HTTP Basic Authentication with the provided username and password below
+* Sets the request's `Authorization` header to use HTTP Basic Authentication
+  with the provided username and password below
   * `username` - The username as a string
   * `password` - The password as a string
 
@@ -67,7 +72,8 @@ In some cases complicated webhooks may need debugging to ensure `urls`,
 `template`, `auth` and more a properly configured. For these use cases we expose
 the following `debug` parameter:
 
-* `debug` - If `true` it will print out each URL request and response information
+* `debug` - If `true` it will print out each URL request and response
+  information
 
 Example configuration to include the `debug` parameter:
 
@@ -83,5 +89,3 @@ notify:
       - http://tower.example.com/api/v1/job_templates/45/launch/
     content_type: application/json
 ```
-
-
