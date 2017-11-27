@@ -7,9 +7,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/url"
-	"os"
-	"strings"
 )
 
 const (
@@ -41,16 +38,19 @@ type (
 	Config struct {
 		Method      string
 		AccessToken string
-		MsgType     string
-		ToUser      []string
-		ToParty     []string
+		Agentid     int    `json:"agentid"`
+		MsgType     string `json:"msgtype"`
+		URL         string
+		MsgURL      string
+		BtnTxt      string
+		ToUser      string `json:"touser"`
+		ToParty     string `json:"toparty"`
 		Safe        bool
-		Content     string
 		ContentType string
-		Template    string
-		Headers     []string
 		Debug       bool
 		SkipVerify  bool
+		Title       string `json:"title"`
+		Description string `json:"description"`
 	}
 
 	Job struct {
@@ -69,7 +69,7 @@ func (p Plugin) Exec() error {
 	var buf bytes.Buffer
 	var b []byte
 
-	if p.Config.Content == "" {
+	if p.Config.Title == "" {
 		data := struct {
 			Repo  Repo  `json:"repo"`
 			Build Build `json:"build"`
@@ -81,12 +81,25 @@ func (p Plugin) Exec() error {
 		}
 		b = buf.Bytes()
 	} else {
-		txt, err := RenderTrim(p.Config.Template, p)
-		if err != nil {
-			return err
-		}
-		text := txt
-		b = []byte(text)
+		textCard := struct {
+			Title       string `json:"title"`
+			Description string `json:"description"`
+			MsgURL      string `json:"url"`
+			BtnTxt      string `json:"btntext"`
+		}{p.Config.Title, p.Config.Description, p.Config.MsgURL, p.Config.BtnTxt}
+		data := struct {
+			ToUser   string `json:"touser"`
+			MsgType  string `json:"msgtype"`
+			Agentid  int    `json:"agentid"`
+			TextCard struct {
+				Title       string `json:"title"`
+				Description string `json:"description"`
+				MsgURL      string `json:"url"`
+				BtnTxt      string `json:"btntext"`
+			} `json:"textcard"`
+		}{p.Config.ToUser, p.Config.MsgType, p.Config.Agentid, textCard}
+
+		b, _ = json.Marshal(data) // []byte(data)
 
 	}
 
@@ -95,80 +108,61 @@ func (p Plugin) Exec() error {
 	// and content_type values will be applied to
 	// every webhook request.
 
-	// TODO: Construct URL for WeChat work
+	url := p.Config.URL + p.Config.AccessToken
+	fmt.Println("URL:>", url)
 
-	for i, rawurl := range p.Config.URLs {
-		uri, err := url.Parse(rawurl)
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(b))
+	req.Header.Set("Content-Type", "application/json")
+
+	// client := &http.Client{}
+
+	client := http.DefaultClient
+	if p.Config.SkipVerify {
+		client = &http.Client{
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			},
+		}
+	}
+
+	resp, err := client.Do(req)
+
+	if err != nil {
+		fmt.Printf("Error: Failed to execute the HTTP request. %s\n", err)
+		return err
+	}
+
+	defer resp.Body.Close()
+
+	fmt.Println("response Status:", resp.Status)
+	fmt.Println("response Headers:", resp.Header)
+	body, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println("response Body:", string(body))
+
+	if p.Config.Debug || resp.StatusCode >= http.StatusBadRequest {
+		body, err := ioutil.ReadAll(resp.Body)
 
 		if err != nil {
-			fmt.Printf("Error: Failed to parse the hook URL. %s\n", err)
-			os.Exit(1)
+			fmt.Printf("Error: Failed to read the HTTP response body. %s\n", err)
 		}
 
-		r := bytes.NewReader(b)
-
-		req, err := http.NewRequest(p.Config.Method, uri.String(), r)
-
-		if err != nil {
-			fmt.Printf("Error: Failed to create the HTTP request. %s\n", err)
-			return err
-		}
-
-		req.Header.Set("Content-Type", p.Config.ContentType)
-
-		for _, value := range p.Config.Headers {
-			header := strings.Split(value, "=")
-			req.Header.Set(header[0], header[1])
-		}
-
-		if p.Config.Username != "" && p.Config.Password != "" {
-			req.SetBasicAuth(p.Config.Username, p.Config.Password)
-		}
-
-		client := http.DefaultClient
-		if p.Config.SkipVerify {
-			client = &http.Client{
-				Transport: &http.Transport{
-					TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-				},
-			}
-		}
-		resp, err := client.Do(req)
-
-		if err != nil {
-			fmt.Printf("Error: Failed to execute the HTTP request. %s\n", err)
-			return err
-		}
-
-		defer resp.Body.Close()
-
-		if p.Config.Debug || resp.StatusCode >= http.StatusBadRequest {
-			body, err := ioutil.ReadAll(resp.Body)
-
-			if err != nil {
-				fmt.Printf("Error: Failed to read the HTTP response body. %s\n", err)
-			}
-
-			if p.Config.Debug {
-				fmt.Printf(
-					debugRespFormat,
-					i+1,
-					req.URL,
-					req.Method,
-					req.Header,
-					string(b),
-					resp.Status,
-					string(body),
-				)
-			} else {
-				fmt.Printf(
-					respFormat,
-					i+1,
-					req.URL,
-					resp.Status,
-					string(body),
-				)
-			}
+		if p.Config.Debug {
+			fmt.Printf(
+				debugRespFormat,
+				req.URL,
+				req.Method,
+				req.Header,
+				string(b),
+				resp.Status,
+				string(body),
+			)
+		} else {
+			fmt.Printf(
+				respFormat,
+				req.URL,
+				resp.Status,
+				string(body),
+			)
 		}
 	}
 	return nil
