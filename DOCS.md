@@ -1,91 +1,24 @@
-Use the Webhook plugin to notify services via Webhook when a build completes.
-You will need to supply Drone with outgoing Webhook URLs.
+Use the wechat plugin to notify users during the Drone pipeline.
 
-You can override the default configuration with the following parameters:
+Please only use these paramters for now:
 
 * `access_token` - The access token for authorization
-* `msgtype` - The type of message, either text, textcard
 * `agentid` - The agent id to send the message
-* `touser` - The users to send the message to, @all for all users
-* `toparty` - Party ID to send messages to
-* `safe` - Whether to make this message confidential or not, 0 is false, 1 is
-  true. Defaults to `false`
-* `skip_verify` - Skip verification of TLS certificates, defaults to `false`
-* `content` - message content
+* `msgurl` - The agent id to send the message
+* `btntxt` - The text for the button on the card
+* `title` - Title of the card
+* `description` - Text description of the card
 
 ## Example
 
 The following is a sample configuration in your .drone.yml file:
 
 ```yaml
-notify:
-  webhook:
-    urls:
-      - https://your.webhook/...
-      - https://your.other.webhook/...
-    headers:
-      - "Authorization=pa55word"
-```
-
-### Custom Body
-
-In some cases you may want to submit a custom payload in the body of your hook.
-For this usage the following additional parameters should be used:
-
-* `template` - Handlebars template to create a custom payload body. See
-  [docs](http://handlebarsjs.com/)
-* `content_type` - HTTP request content type, defaults to `application/json`
-
-Example configuration that generate a custom Yaml payload:
-
-TBD
-
-### Basic Authentication
-
-> It is important to note that with HTTP Basic Authentication the provided
-> username and password are not encrypted.
-
-In some cases your webhook may need to authenticate with another service. You
-can set the basic `Authentication` header with a username and password. For
-these use cases we expose the following additional parameters:
-
-* Sets the request's `Authorization` header to use HTTP Basic Authentication
-  with the provided username and password below
-  * `username` - The username as a string
-  * `password` - The password as a string
-
-Example configuration to include HTTP Basic Authentication:
-
-```yaml
-notify:
-  webhook:
-    method: POST
-    username: myusername
-    password: mypassword
-    urls:
-      - https://tower.example.com/...
-```
-
-### Debugging Webhooks
-
-In some cases complicated webhooks may need debugging to ensure `urls`,
-`template`, `auth` and more a properly configured. For these use cases we expose
-the following `debug` parameter:
-
-* `debug` - If `true` it will print out each URL request and response
-  information
-
-Example configuration to include the `debug` parameter:
-
-```yaml
-notify:
-  webhook:
-    debug: true
-    method: POST
-    username: myusername
-    password: mypassword
-    urls:
-      - http://tower.example.com/api/v1/job_templates/44/launch/
-      - http://tower.example.com/api/v1/job_templates/45/launch/
-    content_type: application/json
+wechat:
+  access-token: somelongasstoken
+  agentid: 12345
+  msgurl: http://acoolwebsite.com
+  btntxt: click
+  title: Title for the card
+  description: This is the card body
 ```
