@@ -2,17 +2,18 @@ package main
 
 import (
 	"fmt"
-	"github.com/urfave/cli"
 	"log"
 	"os"
+
+	"github.com/urfave/cli"
 )
 
 var build = "0" // build number set at compile-time
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "webhook plugin"
-	app.Usage = "webhook plugin"
+	app.Name = "WeChat work plugin"
+	app.Usage = "Wechat Work plugin"
 	app.Action = run
 	app.Version = fmt.Sprintf("1.0.0+%s", build)
 	app.Flags = []cli.Flag{
@@ -23,14 +24,14 @@ func main() {
 			Value:  "POST",
 		},
 		cli.StringFlag{
-			Name:   "username",
-			Usage:  "username for basic auth",
-			EnvVar: "PLUGIN_USERNAME,WEBHOOK_USERNAME",
+			Name:   "access-token",
+			Usage:  "The access token for authorization",
+			EnvVar: "PLUGIN_ACCESS_TOKEN,WEBHOOK_ACCESS_TOKEN",
 		},
 		cli.StringFlag{
-			Name:   "password",
-			Usage:  "password for basic auth",
-			EnvVar: "PLUGIN_PASSWORD,WEBHOOK_PASSWORD",
+			Name:   "msgtype",
+			Usage:  "The type of message, either text, textcard",
+			EnvVar: "PLUGIN_MSGTYPE,WEBHOOK_MSGTYPE",
 		},
 		cli.StringFlag{
 			Name:   "content-type",
@@ -39,19 +40,31 @@ func main() {
 			Value:  "application/json",
 		},
 		cli.StringFlag{
-			Name:   "template",
+			Name:   "touser",
+			Usage:  "The users to send the message to, @all for all users",
+			EnvVar: "PLUGIN_TO_USER",
+			Value:  "@all",
+		},
+		cli.StringFlag{
+			Name:   "toparty",
+			Usage:  "Party ID to send messages to",
+			EnvVar: "PLUGIN_TO_PARTY",
+		},
+		cli.StringFlag{
+			Name:   "safe",
+			Usage:  "Whether to make this message confidential or not, 0 is false, 1 is true. Defaults to false",
+			EnvVar: "PLUGIN_SAFE",
+			Value:  "0",
+		},
+		cli.StringFlag{
+			Name:   "content",
 			Usage:  "custom template for webhook",
-			EnvVar: "PLUGIN_TEMPLATE",
+			EnvVar: "PLUGIN_CONTENT",
 		},
 		cli.StringSliceFlag{
 			Name:   "headers",
 			Usage:  "custom headers key map",
 			EnvVar: "PLUGIN_HEADERS",
-		},
-		cli.StringSliceFlag{
-			Name:   "urls",
-			Usage:  "list of urls to perform the action on",
-			EnvVar: "PLUGIN_URLS",
 		},
 		cli.BoolFlag{
 			Name:   "debug",
@@ -177,12 +190,15 @@ func run(c *cli.Context) error {
 		},
 		Config: Config{
 			Method:      c.String("method"),
-			Username:    c.String("username"),
-			Password:    c.String("password"),
+			AccessToken: c.String("access-token"),
+			MsgType:     c.String("msgtype"),
+			ToUser:      c.StringSlice("touser"),
+			ToParty:     c.StringSlice("toparty"),
+			Safe:        c.Bool("safe"),
+			Content:     c.String("content"),
 			ContentType: c.String("content-type"),
 			Template:    c.String("template"),
 			Headers:     c.StringSlice("headers"),
-			URLs:        c.StringSlice("urls"),
 			Debug:       c.Bool("debug"),
 			SkipVerify:  c.Bool("skip-verify"),
 		},

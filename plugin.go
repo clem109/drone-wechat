@@ -40,12 +40,15 @@ type (
 
 	Config struct {
 		Method      string
-		Username    string
-		Password    string
+		AccessToken string
+		MsgType     string
+		ToUser      []string
+		ToParty     []string
+		Safe        bool
+		Content     string
 		ContentType string
 		Template    string
 		Headers     []string
-		URLs        []string
 		Debug       bool
 		SkipVerify  bool
 	}
@@ -66,7 +69,7 @@ func (p Plugin) Exec() error {
 	var buf bytes.Buffer
 	var b []byte
 
-	if p.Config.Template == "" {
+	if p.Config.Content == "" {
 		data := struct {
 			Repo  Repo  `json:"repo"`
 			Build Build `json:"build"`
@@ -91,6 +94,8 @@ func (p Plugin) Exec() error {
 	// all auth, headers, method, template (payload),
 	// and content_type values will be applied to
 	// every webhook request.
+
+	// TODO: Construct URL for WeChat work
 
 	for i, rawurl := range p.Config.URLs {
 		uri, err := url.Parse(rawurl)

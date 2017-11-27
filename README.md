@@ -26,7 +26,7 @@ docker build --rm -t plugins/webhook .
 
 ```
 docker run --rm \
-  -e PLUGIN_URLS=https://hooks.somplace.com/endpoing/... \
+  -e PLUGIN_URLS=https://bbc.com/... \
   -e PLUGIN_HEADERS="HEADER1=value1" \
   -e PLUGIN_USERNAME=drone \
   -e PLUGIN_PASSWORD=password \
