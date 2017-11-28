@@ -14,11 +14,13 @@ Please only use these paramters for now:
 The following is a sample configuration in your .drone.yml file:
 
 ```yaml
-wechat:
-  access-token: somelongasstoken
-  agentid: 12345
-  msgurl: http://acoolwebsite.com
-  btntxt: click
-  title: Title for the card
-  description: This is the card body
+  wechat:
+    image: clem109/drone-wechat
+    corpid: corpid
+    corp_secret: corpsecret
+    agent_id: 123456
+    title: title
+    description: some description
+    msg_url: someurl
+    btn_txt: btn text
 ```
