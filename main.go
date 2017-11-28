@@ -27,12 +27,17 @@ func main() {
 			Name:   "url",
 			Usage:  "wechat work url",
 			EnvVar: "PLUGIN_URL",
-			Value:  "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=",
+			Value:  "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=",
 		},
 		cli.StringFlag{
-			Name:   "access-token",
-			Usage:  "The access token for authorization",
-			EnvVar: "PLUGIN_ACCESS_TOKEN,WEBHOOK_ACCESS_TOKEN",
+			Name:   "corpid",
+			Usage:  "The corpid to get the access token",
+			EnvVar: "PLUGIN_CORPID,WEBHOOK_CORPID",
+		},
+		cli.StringFlag{
+			Name:   "corp-secret",
+			Usage:  "The corpsecret to get the access token",
+			EnvVar: "PLUGIN_CORP_SECRET,WEBHOOK_CORP_Secret",
 		},
 		cli.StringFlag{
 			Name:   "agentid",
@@ -212,7 +217,8 @@ func run(c *cli.Context) error {
 		},
 		Config: Config{
 			Method:      c.String("method"),
-			AccessToken: c.String("access-token"),
+			CorpID:      c.String("corpid"),
+			CorpSecret:  c.String("corp-secret"),
 			Agentid:     c.Int("agentid"),
 			MsgType:     c.String("msgtype"),
 			URL:         c.String("url"),

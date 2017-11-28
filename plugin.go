@@ -37,7 +37,8 @@ type (
 
 	Config struct {
 		Method      string
-		AccessToken string
+		CorpID      string
+		CorpSecret  string
 		Agentid     int    `json:"agentid"`
 		MsgType     string `json:"msgtype"`
 		URL         string
@@ -53,22 +54,70 @@ type (
 		Description string `json:"description"`
 	}
 
+	Response struct {
+		Errcode     int    `json:"errcode"`
+		Errmsg      string `json:"errmsg"`
+		AccessToken string `json:"access_token"`
+		ExpiresIn   int    `json:"expires_in"`
+	}
+
 	Job struct {
 		Started int64 `json:"started"`
 	}
 
 	Plugin struct {
-		Repo   Repo
-		Build  Build
-		Config Config
-		Job    Job
+		Repo     Repo
+		Build    Build
+		Config   Config
+		Response Response
+		Job      Job
 	}
 )
 
+func getToken(body []byte) (*Response, error) {
+	var s = new(Response)
+	err := json.Unmarshal(body, &s)
+	if err != nil {
+		fmt.Println("whoops:", err)
+	}
+	return s, err
+}
+
 func (p Plugin) Exec() error {
+
 	var buf bytes.Buffer
 	var b []byte
 
+	// GET request to get the access token
+	accessURL := p.Config.URL + p.Config.CorpID + "&corpsecret=" + p.Config.CorpSecret
+	fmt.Println("URL:>", accessURL)
+
+	req, err := http.NewRequest("GET", accessURL, bytes.NewBuffer(b))
+	var client = http.DefaultClient
+	if p.Config.SkipVerify {
+		client = &http.Client{
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			},
+		}
+	}
+	resp, err := client.Do(req)
+
+	if err != nil {
+		fmt.Printf("Error: Failed to execute the HTTP request. %s\n", err)
+		return err
+	}
+
+	defer resp.Body.Close()
+
+	fmt.Println("response Status:", resp.Status)
+	fmt.Println("response Headers:", resp.Header)
+	body, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println("response Body:", string(body))
+
+	s, err := getToken(body)
+
+	// POST Request to WeChat work
 	if p.Config.Title == "" {
 		data := struct {
 			Repo  Repo  `json:"repo"`
@@ -103,20 +152,13 @@ func (p Plugin) Exec() error {
 
 	}
 
-	// build and execute a request for each url.
-	// all auth, headers, method, template (payload),
-	// and content_type values will be applied to
-	// every webhook request.
+	// POST URL
+	url := "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=" + s.AccessToken
 
-	url := p.Config.URL + p.Config.AccessToken
-	fmt.Println("URL:>", url)
+	request, err := http.NewRequest("POST", url, bytes.NewBuffer(b))
+	request.Header.Set("Content-Type", "application/json")
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(b))
-	req.Header.Set("Content-Type", "application/json")
-
-	// client := &http.Client{}
-
-	client := http.DefaultClient
+	client = http.DefaultClient
 	if p.Config.SkipVerify {
 		client = &http.Client{
 			Transport: &http.Transport{
@@ -125,19 +167,18 @@ func (p Plugin) Exec() error {
 		}
 	}
 
-	resp, err := client.Do(req)
+	response, err := client.Do(request)
 
 	if err != nil {
 		fmt.Printf("Error: Failed to execute the HTTP request. %s\n", err)
 		return err
 	}
+	defer response.Body.Close()
 
-	defer resp.Body.Close()
-
-	fmt.Println("response Status:", resp.Status)
-	fmt.Println("response Headers:", resp.Header)
-	body, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println("response Body:", string(body))
+	fmt.Println("response Status:", response.Status)
+	fmt.Println("response Headers:", response.Header)
+	responseBody, _ := ioutil.ReadAll(response.Body)
+	fmt.Println("response Body:", string(responseBody))
 
 	if p.Config.Debug || resp.StatusCode >= http.StatusBadRequest {
 		body, err := ioutil.ReadAll(resp.Body)

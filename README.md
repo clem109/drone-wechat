@@ -26,7 +26,8 @@ docker build --rm -t plugins/drone-wechat .
 
 ```
 docker run --rm \
-  -e PLUGIN_ACCESS_TOKEN=accesstoken \
+  -e PLUGIN_CORPID=corpid \
+  -e PLUGIN_CORP_SECRET=corpsecret \
   -e PLUGIN_AGENT_ID=agentid \
   -e PLUGIN_DEBUG=true \
   -e PLUGIN_MSG_URL=url \
