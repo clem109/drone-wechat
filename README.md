@@ -13,8 +13,6 @@ Build the binary with the following commands:
 go build
 ```
 
-## CHANGE BELOW
-
 ## Docker
 
 Build the Docker image with the following commands:
