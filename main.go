@@ -227,7 +227,7 @@ func run(c *cli.Context) error {
 			ToTag:       c.String("tostring"),
 			Title:       c.String("title"),
 			Description: c.String("description"),
-			Safe:        c.Bool("safe"),
+			Safe:        c.Int("safe"),
 			ContentType: c.String("content-type"),
 			Debug:       c.Bool("debug"),
 			SkipVerify:  c.Bool("skip-verify"),

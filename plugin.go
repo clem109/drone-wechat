@@ -150,7 +150,7 @@ func (p Plugin) Exec() error {
 				MsgURL      string `json:"url"`
 				BtnTxt      string `json:"btntext"`
 			} `json:"textcard"`
-		}{p.Config.ToUser, p.Config.MsgType, p.Config.Agentid, textCard}
+		}{p.Config.ToUser, p.Config.ToParty, p.Config.ToTag, p.Config.MsgType, p.Config.Agentid, p.Config.Safe, textCard}
 
 		b, _ = json.Marshal(data) // []byte(data)
 
