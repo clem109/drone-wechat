@@ -31,6 +31,10 @@ docker run --rm \
   -e PLUGIN_CORPID=corpid \
   -e PLUGIN_CORP_SECRET=corpsecret \
   -e PLUGIN_AGENT_ID=agentid \
+  -e PLUGIN_TO_USER=userId \
+  -e PLUGIN_TO_TAG=tagId \
+  -e PLUGIN_TO_PARTY=toParty \
+  -e PLUGIN_SAFE=1 \
   -e PLUGIN_DEBUG=true \
   -e PLUGIN_MSG_URL=url \
   -e PLUGIN_BTN_TXT=true \

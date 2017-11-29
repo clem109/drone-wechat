@@ -5,10 +5,13 @@ Please only use these paramters for now:
 * `corpid` - The corpid for authorization
 * `corp_secret` - The corp secret for authorization
 * `agent_id` - The agent id to send the message
-* `msg_url` - The agent id to send the message
-* `btntxt` - The text for the button on the card
+* `to_party` - The party ids to send the message
+* `to_user` - The user ids to send the message to
+* `to_tag` - The tag ids to send the message to
 * `title` - Title of the card
 * `description` - Text description of the card
+* `msg_url` - The agent id to send the message
+* `btntxt` - The text for the button on the card
 
 ## Example
 
