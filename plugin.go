@@ -89,8 +89,8 @@ func (p Plugin) Exec() error {
 	var buf bytes.Buffer
 	var b []byte
 
-	// GET request to get the access token
-	accessURL := p.Config.URL + p.Config.CorpID + "&corpsecret=" + p.Config.CorpSecret
+	// construct URL to get access token
+	accessURL := "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=" + p.Config.CorpID + "&corpsecret=" + p.Config.CorpSecret
 	fmt.Println("URL:>", accessURL)
 
 	req, err := http.NewRequest("GET", accessURL, bytes.NewBuffer(b))

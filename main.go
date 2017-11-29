@@ -24,12 +24,6 @@ func main() {
 			Value:  "POST",
 		},
 		cli.StringFlag{
-			Name:   "url",
-			Usage:  "wechat work url",
-			EnvVar: "PLUGIN_URL",
-			Value:  "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=",
-		},
-		cli.StringFlag{
 			Name:   "corpid",
 			Usage:  "The corpid to get the access token",
 			EnvVar: "PLUGIN_CORPID,WEBHOOK_CORPID",
@@ -226,7 +220,6 @@ func run(c *cli.Context) error {
 			CorpSecret:  c.String("corp-secret"),
 			Agentid:     c.Int("agentid"),
 			MsgType:     c.String("msgtype"),
-			URL:         c.String("url"),
 			MsgURL:      c.String("msgurl"),
 			BtnTxt:      c.String("btntxt"),
 			ToUser:      c.String("touser"),
