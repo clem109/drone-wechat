@@ -46,7 +46,8 @@ type (
 		BtnTxt      string
 		ToUser      string `json:"touser"`
 		ToParty     string `json:"toparty"`
-		Safe        bool
+		ToTag       string `json:"totag"`
+		Safe        int    `json:"safe"`
 		ContentType string
 		Debug       bool
 		SkipVerify  bool
@@ -74,7 +75,7 @@ type (
 	}
 )
 
-func getToken(body []byte) (*Response, error) {
+func getAccessToken(body []byte) (*Response, error) {
 	var s = new(Response)
 	err := json.Unmarshal(body, &s)
 	if err != nil {
@@ -115,7 +116,7 @@ func (p Plugin) Exec() error {
 	body, _ := ioutil.ReadAll(resp.Body)
 	fmt.Println("response Body:", string(body))
 
-	s, err := getToken(body)
+	s, err := getAccessToken(body)
 
 	// POST Request to WeChat work
 	if p.Config.Title == "" {
@@ -138,8 +139,11 @@ func (p Plugin) Exec() error {
 		}{p.Config.Title, p.Config.Description, p.Config.MsgURL, p.Config.BtnTxt}
 		data := struct {
 			ToUser   string `json:"touser"`
+			ToParty  string `json:"toparty"`
+			ToTag    string `json:"totag"`
 			MsgType  string `json:"msgtype"`
 			Agentid  int    `json:"agentid"`
+			Safe     int    `json:"safe"`
 			TextCard struct {
 				Title       string `json:"title"`
 				Description string `json:"description"`

@@ -68,6 +68,11 @@ func main() {
 			EnvVar: "PLUGIN_TO_PARTY",
 		},
 		cli.StringFlag{
+			Name:   "totag",
+			Usage:  "Tag ID to send messages to",
+			EnvVar: "PLUGIN_TO_TAG",
+		},
+		cli.StringFlag{
 			Name:   "title",
 			Usage:  "Message title",
 			EnvVar: "PLUGIN_TITLE",
@@ -226,6 +231,7 @@ func run(c *cli.Context) error {
 			BtnTxt:      c.String("btntxt"),
 			ToUser:      c.String("touser"),
 			ToParty:     c.String("toparty"),
+			ToTag:       c.String("tostring"),
 			Title:       c.String("title"),
 			Description: c.String("description"),
 			Safe:        c.Bool("safe"),
