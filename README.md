@@ -1,7 +1,9 @@
-# drone-wechat (WORK IN PROGRESS)
+# drone-wechat-work
 
 Drone plugin to send build status notifications via WeChat for Work. For usage
-information please look at [the docs](DOCS.md).
+information please look at [the docs](DOCS.md). This plugin creates a HTTP
+request in the form as
+[shown here (it's in chinese)](https://work.weixin.qq.com/api/doc#10167/文本卡片消息)
 
 ## Build
 
