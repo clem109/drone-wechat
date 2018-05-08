@@ -224,7 +224,7 @@ func run(c *cli.Context) error {
 			BtnTxt:      c.String("btntxt"),
 			ToUser:      c.String("touser"),
 			ToParty:     c.String("toparty"),
-			ToTag:       c.String("tostring"),
+			ToTag:       c.String("totag"),
 			Title:       c.String("title"),
 			Description: c.String("description"),
 			Safe:        c.Int("safe"),
