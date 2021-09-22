@@ -10,7 +10,7 @@ Please only use these paramters for now:
 * `to_tag` - The tag ids to send the message to
 * `title` - Title of the card
 * `description` - Text description of the card
-* `msg_url` - The agent id to send the message
+* `msg_url` - *Required* The agent id to send the message
 * `btntxt` - The text for the button on the card
 
 ## Example
@@ -21,13 +21,14 @@ The following is a sample configuration in your .drone.yml file:
 pipeline:
   wechat:
     image: clem109/drone-wechat
-    corpid: corpid
-    corp_secret: secret
-    agent_id: 1234567
-    title: ${DRONE_REPO_NAME}
-    description: "Build Number: ${DRONE_BUILD_NUMBER} failed. ${DRONE_COMMIT_AUTHOR} please fix. Check the results here: ${DRONE_BUILD_LINK} "
-    msg_url: ${DRONE_BUILD_LINK}
-    btn_txt: btn
+    settings:
+      corpid: corpid
+      corp_secret: secret
+      agent_id: 1234567
+      title: ${DRONE_REPO_NAME}
+      description: "Build Number: ${DRONE_BUILD_NUMBER} failed. ${DRONE_COMMIT_AUTHOR} please fix. Check the results here: ${DRONE_BUILD_LINK} "
+      msg_url: ${DRONE_BUILD_LINK}
+      btn_txt: btn
     when:
       status: [ failure ]
 ```
@@ -40,11 +41,12 @@ Drone UI, please consult the [main.go](main.go) EnvVar:
 pipeline:
   wechat:
     image: clem109/drone-wechat
-    secrets: [plugin_corpid, plugin_corp_secret, plugin_agent_id]
-    title: ${DRONE_REPO_NAME}
-    description: "Build Number: ${DRONE_BUILD_NUMBER} failed. ${DRONE_COMMIT_AUTHOR} please fix. Check the results here: ${DRONE_BUILD_LINK} "
-    msg_url: ${DRONE_BUILD_LINK}
-    btn_txt: btn
+    settings:
+      secrets: [plugin_corpid, plugin_corp_secret, plugin_agent_id]
+      title: ${DRONE_REPO_NAME}
+      description: "Build Number: ${DRONE_BUILD_NUMBER} failed. ${DRONE_COMMIT_AUTHOR} please fix. Check the results here: ${DRONE_BUILD_LINK} "
+      msg_url: ${DRONE_BUILD_LINK}
+      btn_txt: btn
     when:
       status: [ failure ]
 ```
